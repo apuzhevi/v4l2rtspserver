@@ -1,15 +1,14 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(v4l2rtspserver)
+project(rs2rtspserver)
 
 option(COVERAGE "Coverage" OFF)
 
-set(ALSA ON CACHE BOOL "use ALSA is available")
 set(LIVE555URL https://download.videolan.org/pub/contrib/live555/live.2019.03.06.tar.gz CACHE STRING "live555 url")
 set(LIVE555CFLAGS -DBSD=1 -DSOCKLEN_T=socklen_t -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -DALLOW_RTSP_SERVER_PORT_REUSE=1 CACHE STRING "live555 CFGLAGS")
 
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_C_FLAGS "-Wall")
+set(CMAKE_C_FLAGS "-Wall -g")
 set(CMAKE_CXX_FLAGS "-Wall")
 
 # set version based on git
@@ -37,31 +36,23 @@ message(STATUS "CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
 message(STATUS "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
 message(STATUS "CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}")
 
-#pthread
+# pthread
 find_package (Threads)
 target_link_libraries (${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT}) 
-
-#ALSA
-if (ALSA)
-find_package(ALSA QUIET)
-if (ALSA_LIBRARY)
-	message(STATUS "Alsa available")
-	add_definitions(-DHAVE_ALSA)
-        target_link_libraries (${PROJECT_NAME} ${ALSA_LIBRARY}) 
-	
-	SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${CPACK_DEBIAN_PACKAGE_DEPENDS}libasound2-dev,)	
-endif (ALSA_LIBRARY)
-endif()
 
 # LOG4CPP
 find_package(log4cpp QUIET)
 if (LOG4CPP_LIBRARY)
-        message(STATUS "Log4Cpp available")
+	message(STATUS "Log4Cpp available")
 	add_definitions(-DHAVE_LOG4CPP)
 	target_link_libraries(${PROJECT_NAME} "${LOG4CPP_LIBRARY}")
 	
 	SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${CPACK_DEBIAN_PACKAGE_DEPENDS}liblog4cpp5-dev,)
 endif ()
+
+# libRealSense
+find_library(RS_LIB librealsense2 PATHS /usr/local/lib/)
+target_link_libraries(rs2rtspserver "${RS_LIB}")
 
 # v4l2wrapper
 EXEC_PROGRAM("git submodule update --init")
@@ -85,11 +76,11 @@ add_library (live555 STATIC ${LIVESOURCE})
 target_include_directories(live555 PUBLIC ${LIVE}/groupsock/include ${LIVE}/liveMedia/include ${LIVE}/UsageEnvironment/include ${LIVE}/BasicUsageEnvironment/include)
 target_link_libraries (${PROJECT_NAME} live555)
 
-#testing
+# testing
 enable_testing()
 add_test(help ./${PROJECT_NAME} -h)
 
-#systemd
+# systemd
 find_package(PkgConfig)
 pkg_check_modules(SYSTEMD systemd QUIET)
 if (SYSTEMD_FOUND)

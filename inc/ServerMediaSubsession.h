@@ -20,7 +20,7 @@
 #include <liveMedia.hh>
 
 // forward declaration
-class V4L2DeviceSource;
+class RSDeviceSource;
 
 // ---------------------------------
 //   BaseServerMediaSubsession
@@ -32,8 +32,8 @@ class BaseServerMediaSubsession
 	
 	public:
 		static FramedSource* createSource(UsageEnvironment& env, FramedSource * videoES, const std::string& format);
-		static RTPSink* createSink(UsageEnvironment& env, Groupsock * rtpGroupsock, unsigned char rtpPayloadTypeIfDynamic, const std::string& format, V4L2DeviceSource* source);
-		char const* getAuxLine(V4L2DeviceSource* source, RTPSink* rtpSink);
+		static RTPSink* createSink(UsageEnvironment& env, Groupsock * rtpGroupsock, unsigned char rtpPayloadTypeIfDynamic, const std::string& format, RSDeviceSource* source);
+		char const* getAuxLine(RSDeviceSource* source, RTPSink* rtpSink);
 		
 	protected:
 		StreamReplicator* m_replicator;
