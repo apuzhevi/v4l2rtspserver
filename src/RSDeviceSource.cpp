@@ -101,7 +101,16 @@ void* RSDeviceSource::thread()
 		gettimeofday(&tv, NULL);												
 		m_in.notify(tv.tv_sec, frameSize);
 		char* buf = new char[frameSize];
-		const void * frameBuf = fs.get_depth_frame().get_data();
+		const void * frameBuf;
+		if (m_queueSize==42)
+		{
+			frameBuf = fs.get_depth_frame().get_data();
+		}
+		else
+		{
+			frameBuf = fs.get_color_frame().get_data();
+		}
+		
 		if (frameBuf) {
 			LOG(DEBUG) << "frame arrived\ttimestamp:" << tv.tv_sec << "." << tv.tv_usec << "\tsize:" << frameSize << std::endl;
 			memcpy(buf, frameBuf, frameSize);

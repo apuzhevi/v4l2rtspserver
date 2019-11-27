@@ -342,29 +342,39 @@ int main(int argc, char** argv) {
 		LOG(ERROR) << "Failed to create RTSP server: " << env->getResultMsg() << std::endl;
 	} else {			
 		StreamReplicator* videoReplicator = NULL;
+		StreamReplicator* videoReplicator_2 = NULL;
+
 		std::string rtpFormat("video/RAW");
 
 		LOG(NOTICE) << "Create RS pipeline..." << std::endl;
 		pipeline pipe;
 		config cfg;
 		cfg.enable_stream(rs2_stream::RS2_STREAM_DEPTH, 640, 480, RS2_FORMAT_Z16, 30); // AP: hardcode all constants, they never chage
+		cfg.enable_stream(rs2_stream::RS2_STREAM_COLOR, 424, 240, RS2_FORMAT_RGB8, 30); // AP: hardcode all constants, they never chage
+		//nhershko
 		pipe.start(cfg);
 
 		LOG(NOTICE) << "Create Source ..." << std::endl;
 		FramedSource* videoSource = RSDeviceSource::createNew(*env, pipe, 42); // AP: 42 can replace any integer value
+		FramedSource* videoSource2 = RSDeviceSource::createNew(*env, pipe, 41); // AP: 42 can replace any integer value
+		
 		if (videoSource == NULL) {
 			LOG(FATAL) << "Unable to create source for device " << std::endl;
 		} else {
 			videoReplicator = StreamReplicator::createNew(*env, videoSource, false);
+			videoReplicator_2 = StreamReplicator::createNew(*env, videoSource2, false);
 		}
 
 		// Create Unicast Session					
 		std::list<ServerMediaSubsession*> subSession;
+		std::list<ServerMediaSubsession*> subSession2;
 		if (videoReplicator) {
 			subSession.push_back(UnicastServerMediaSubsession::createNew(*env, videoReplicator, rtpFormat));				
+			subSession.push_back(UnicastServerMediaSubsession::createNew(*env, videoReplicator_2, rtpFormat));				
 		}
 
 		if (addSession(rtspServer, gParams.url, subSession)) {
+			//addSession(rtspServer, gParams.url+ "2", subSession2);
 			// main loop
 			signal(SIGINT,sighandler);
 			env->taskScheduler().doEventLoop(&quit); 
