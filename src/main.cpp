@@ -350,7 +350,7 @@ int main(int argc, char** argv) {
 		pipeline pipe;
 		config cfg;
 		cfg.enable_stream(rs2_stream::RS2_STREAM_DEPTH, 640, 480, RS2_FORMAT_Z16, 30); // AP: hardcode all constants, they never chage
-		cfg.enable_stream(rs2_stream::RS2_STREAM_COLOR, 424, 240, RS2_FORMAT_RGB8, 30); // AP: hardcode all constants, they never chage
+		cfg.enable_stream(rs2_stream::RS2_STREAM_COLOR, 640, 480, RS2_FORMAT_YUYV, 30); // AP: hardcode all constants, they never chage
 		//nhershko
 		pipe.start(cfg);
 
@@ -370,7 +370,9 @@ int main(int argc, char** argv) {
 		std::list<ServerMediaSubsession*> subSession2;
 		if (videoReplicator) {
 			subSession.push_back(UnicastServerMediaSubsession::createNew(*env, videoReplicator, rtpFormat));				
-			subSession.push_back(UnicastServerMediaSubsession::createNew(*env, videoReplicator_2, rtpFormat));				
+			LOG(1) << "medium created! NAME: "<< subSession.front()->name() << std::endl;			
+			subSession.push_back(UnicastServerMediaSubsession::createNew(*env, videoReplicator_2, rtpFormat));	
+			LOG(1) << "medium created! NAME: "<< subSession.front()->name() << std::endl;			
 		}
 
 		if (addSession(rtspServer, gParams.url, subSession)) {

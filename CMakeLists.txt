@@ -50,12 +50,13 @@ if (LOG4CPP_LIBRARY)
 	SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${CPACK_DEBIAN_PACKAGE_DEPENDS}liblog4cpp5-dev,)
 endif ()
 
+# PATHS /usr/local/lib/
 # libRealSense
-find_library(RS_LIB librealsense2 PATHS /usr/local/lib/)
-target_link_libraries(rs2rtspserver "${RS_LIB}")
+find_library(RS_LIB librealsense2 PATHS /usr/local/lib)
+target_link_libraries(rs2rtspserver ${RS_LIB})
 
 # v4l2wrapper
-EXEC_PROGRAM("git submodule update --init")
+#EXEC_PROGRAM("git submodule update --init")
 aux_source_directory(v4l2wrapper/src LIBSRC_FILES)
 include_directories("v4l2wrapper/inc")
 add_library(v4l2wrapper STATIC ${LIBSRC_FILES})
@@ -63,13 +64,18 @@ target_link_libraries (${PROJECT_NAME} v4l2wrapper)
 
 # live555
 set(LIVE ${CMAKE_BINARY_DIR}/live)
-if (NOT EXISTS ${LIVE})
-    file (DOWNLOAD ${LIVE555URL} ${CMAKE_BINARY_DIR}/live555-latest.tar.gz )
-    EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E tar xvf ${CMAKE_BINARY_DIR}/live555-latest.tar.gz  RESULT_VARIABLE unpack_result)
-    if(NOT unpack_result STREQUAL "0")
-        message(FATAL_ERROR "Fetching and compiling live555 failed!")
-    endif()
-endif()
+#if (NOT EXISTS ${LIVE})
+#message(STATUS "LIVE555 NOT found")
+#    file (DOWNLOAD ${LIVE555URL} ${CMAKE_BINARY_DIR}/live555-latest.tar.gz )
+#    EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E tar xvf ${CMAKE_BINARY_DIR}/live555-latest.tar.gz  RESULT_VARIABLE unpack_result)
+#    if(NOT unpack_result STREQUAL "0")
+#        message(FATAL_ERROR "Fetching and compiling live555 failed!")
+#    endif()
+#endif()
+
+set(LIVE ${CMAKE_BINARY_DIR}/../live)
+message("LIVE555 found!!! ${CMAKE_BINARY_DIR} ")
+
 FILE(GLOB LIVESOURCE ${LIVE}/groupsock/*.c* ${LIVE}/liveMedia/*.c* ${LIVE}/UsageEnvironment/*.c* ${LIVE}/BasicUsageEnvironment/*.c*)
 add_definitions(${LIVE555CFLAGS})
 add_library (live555 STATIC ${LIVESOURCE})

@@ -31,6 +31,7 @@ RTPSink*  BaseServerMediaSubsession::createSink(
 {
 	RTPSink* videoSink = NULL;
 	std::string sampling("YCbCr-4:2:2");
+
 	videoSink = RawVideoRTPSink::createNew(env, rtpGroupsock, rtpPayloadTypeIfDynamic, source->getHeight(), source->getWidth(), 8, sampling.c_str());
 	return videoSink;
 }

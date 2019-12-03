@@ -95,6 +95,7 @@ void* RSDeviceSource::thread()
 	LOG(NOTICE) << "begin thread" << std::endl; 
 	while (!stop) {
 		unsigned int frameSize = getWidth() * getHeight() * (getBPP() / 8);
+
 		// Wait for next set of frames from the camera
 		frameset fs = m_pipe.wait_for_frames(); 
 
@@ -105,10 +106,12 @@ void* RSDeviceSource::thread()
 		if (m_queueSize==42)
 		{
 			frameBuf = fs.get_depth_frame().get_data();
+			LOG(DEBUG) << "depth frame size:bpp:width is: " << fs.get_depth_frame().get_data_size() << ":" << fs.get_depth_frame().get_bytes_per_pixel() << ":" << fs.get_depth_frame().get_width() << std::endl;
 		}
 		else
 		{
 			frameBuf = fs.get_color_frame().get_data();
+			LOG(DEBUG) << "color frame size:bpp:width is: " << fs.get_color_frame().get_data_size() << ":" << fs.get_color_frame().get_bytes_per_pixel() << ":" << fs.get_color_frame().get_width() << std::endl;
 		}
 		
 		if (frameBuf) {
@@ -189,7 +192,7 @@ void RSDeviceSource::deliverFrame()
 			memcpy(fTo, frame->m_buffer, fFrameSize);
 			delete frame;
 
-			write(m_fd, fTo, fFrameSize);
+			//write(m_fd, fTo, fFrameSize);
 		}
 		pthread_mutex_unlock (&m_mutex);
 		

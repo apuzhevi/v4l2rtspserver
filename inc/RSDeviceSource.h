@@ -69,15 +69,10 @@ class RSDeviceSource: public FramedSource
 		static RSDeviceSource* createNew(UsageEnvironment& env, pipeline pipe, unsigned int queueSize);
 		std::string getAuxLine() { return m_auxLine; };	
 		void setAuxLine(const std::string auxLine) { m_auxLine = auxLine; };	
-		int getWidth() { return m_queueSize != 41 ? m_width : 424; };	
-		int getHeight() { return m_queueSize != 41 ? m_height : 240; };	
-		int getBPP() { return m_queueSize != 41 ? m_bpp : 24; };	
 
-		/*
-		int getWidth() { return m_queueSize != 41 ? m_width : 424; };   
-		int getHeight() { return m_queueSize != 41 ? m_height : 240; }; 
-        int getBPP() { return m_queueSize != 41 ? m_bpp : 24; };
-		*/
+		int getWidth() { return m_width; };   
+		int getHeight() { return  m_height; }; 
+        int getBPP() { return m_bpp; };
 
 	protected:
 		RSDeviceSource(UsageEnvironment& env, pipeline pipe, unsigned int queueSize);
